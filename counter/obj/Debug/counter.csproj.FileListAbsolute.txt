@@ -1,0 +1,6 @@
+C:\Users\TCYKIRAN\source\repos\counter\counter\bin\Debug\counter.exe.config
+C:\Users\TCYKIRAN\source\repos\counter\counter\bin\Debug\counter.exe
+C:\Users\TCYKIRAN\source\repos\counter\counter\bin\Debug\counter.pdb
+C:\Users\TCYKIRAN\source\repos\counter\counter\obj\Debug\counter.csprojAssemblyReference.cache
+C:\Users\TCYKIRAN\source\repos\counter\counter\obj\Debug\counter.exe
+C:\Users\TCYKIRAN\source\repos\counter\counter\obj\Debug\counter.pdb
