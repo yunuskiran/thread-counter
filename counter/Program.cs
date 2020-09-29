@@ -14,7 +14,7 @@ namespace counter
         static void Main(string[] args)
         {
             var defaultThreadCount = 5;
-            var path = @"C:\Users\TCYKIRAN\source\repos\counter\counter\Files\Sample.txt";
+            var path = @"D:\gits\thread-counter\counter\Files\Sample.txt";
             Console.Write("Thread Count: ");
             int.TryParse(Console.ReadLine(), out var threadCount);
             if (threadCount == 0)
@@ -32,14 +32,36 @@ namespace counter
         {
             lockSlim = new ReaderWriterLockSlim();
             innerCache = new Dictionary<string, int>();
-            var content = File.ReadAllText(@"C:\Users\TCYKIRAN\source\repos\counter\counter\Files\Sample.txt");
+            var content = File.ReadAllText(path);
             var sentences = Regex.Split(content, @"(?<=[\.!\?])\s+").ToList();
             var average = Math.Round(sentences.Average(_ => _.Split(' ').Length));
-            List<Thread> threads = new List<Thread>();
-            ThreadPool.SetMaxThreads(threadCount, 1);
-            foreach (var item in sentences)
+            List<List<WaitHandle>> waitHandles = new List<List<WaitHandle>>();
+            WaitHandle[] waitHandless = new WaitHandle[threadCount];
+            int counter = 0;
+            while (sentences.Skip((threadCount - 1) * counter).Take(threadCount).Any())
             {
-                ThreadPool.QueueUserWorkItem(x => Process(item));
+                var data = sentences.Skip((threadCount - 1) * counter).Take(threadCount).ToList();
+                for (int i = 0; i < data.Count; i++)
+                {
+                    var j = i;
+                    var handle = new EventWaitHandle(false, EventResetMode.ManualReset);
+                    var thread = new Thread(() =>
+                    {
+                        Process(data[j]);
+                        handle.Set();
+                    });
+                    thread.Start();
+                    waitHandless[j] = handle;
+                }
+
+                waitHandles.Add(waitHandless.ToList());
+                counter++;
+            }
+
+            foreach (var item in waitHandles)
+            {
+                if (item != null)
+                    WaitHandle.WaitAll(item.Where(_ => _ != null).ToArray());
             }
 
             Console.WriteLine($"Sentence Count: {sentences.Count}");
